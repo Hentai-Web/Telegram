@@ -1,5 +1,6 @@
 const TelegramBot = require("node-telegram-bot-api");
 const hmtai = require("./hmtai");
+const fetch = require("sync-fetch");
 require("dotenv").config();
 
 const h = hmtai;
@@ -64,31 +65,28 @@ function sendHWImg(regex, codeName) {
     const chatId = msg.chat.id;
     const resp = match[1];
 
+    const res = fetch(
+      `https://cdn.dergoogler.com/others/hentai-web/images/${resp}.json`
+    );
+    const img = res.json();
+
     try {
-      bot.sendPhoto(chatId, codeName(resp), { caption: null });
+      bot.sendPhoto(chatId, codeName(resp, img), { caption: null });
     } catch (error) {
-      console.log(error);
+      bot.sendMessage(error);
     }
   });
 }
 
-sendHWImg(/sfw (.+)/, (resp) => {
-  return h[resp]();
+sendHWImg(/\/(.+)/, (resp, img) => {
+  return img[Math.floor(Math.random() * img.length)];
 });
 
-sendHWImg(/nsfw (.+)/, (resp) => {
-  return h.nsfw[resp]();
+sendHWImg(/(.+)/, (resp, img) => {
+  return img[Math.floor(Math.random() * img.length)];
 });
 
-sendHWImg(/\/sfw_(.+)/, (resp) => {
-  return h[resp]();
-});
-
-sendHWImg(/\/nsfw_(.+)/, (resp) => {
-  return h.nsfw[resp]();
-});
-
-bot.onText(/(\/?)commands/, (msg, match) => {
+bot.onText(/(\/?)commmands/, (msg, match) => {
   const chatId = msg.chat.id;
   const resp = match[1];
 
