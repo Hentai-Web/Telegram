@@ -1,9 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api");
-const hmtai = require("./hmtai");
 const fetch = require("sync-fetch");
 require("dotenv").config();
 
-const h = hmtai;
 const token = process.env.BOT_TOKEN;
 
 const help_message = `
